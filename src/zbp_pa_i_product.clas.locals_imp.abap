@@ -119,17 +119,17 @@ CLASS lhc_Product IMPLEMENTATION.
   METHOD copyProduct.
 
 
-*    DATA:
-**       products       TYPE TABLE FOR CREATE zpa_i_product\\product.
+    DATA:
+      products       TYPE TABLE FOR CREATE zpa_i_product\\product.
 **    markets_cba  TYPE TABLE FOR CREATE zpa_i_product\\product\_market,
 **    orders_cba TYPE TABLE FOR CREATE zpa_i_product\\market\_order.
 **
-**    READ ENTITIES OF zpa_i_product IN LOCAL MODE
-**      ENTITY Product
-**       ALL FIELDS WITH CORRESPONDING #( keys )
-**                  RESULT DATA(product_read_result)
-**     FAILED    failed
-**     REPORTED  reported.
+    READ ENTITIES OF zpa_i_product IN LOCAL MODE
+      ENTITY Product
+       ALL FIELDS WITH CORRESPONDING #( keys )
+                  RESULT DATA(product_read_result)
+     FAILED    failed
+     REPORTED  reported.
 
 ** to add read eml for another entities - market, order
 ***********************************************************************
@@ -145,26 +145,27 @@ CLASS lhc_Product IMPLEMENTATION.
 ***********************************************************************
 *
 *
-*    DATA(lv_date) = cl_abap_context_info=>get_system_time( ).
-*    DATA(lv_user)  = cl_abap_context_info=>get_user_alias( ).
-*    TRY.
-*        DATA(lv_uuid)  = cl_system_uuid=>create_uuid_x16_static( ).
-*      CATCH cx_uuid_error .
-*    ENDTRY.
+    DATA(lv_date) = cl_abap_context_info=>get_system_time( ).
+    DATA(lv_user)  = cl_abap_context_info=>get_user_alias( ).
+    TRY.
+        DATA(lv_uuid)  = cl_system_uuid=>create_uuid_x16_static( ).
+      CATCH cx_uuid_error .
+    ENDTRY.
 *
-*    LOOP AT keys INTO DATA(key).
-*      DATA(lv_prodid) = key-%param.
-*    ENDLOOP.
+    LOOP AT keys INTO DATA(key).
+      DATA(lv_prodid) = key-%param.
+    ENDLOOP.
 *
-*    LOOP AT product_read_result ASSIGNING FIELD-SYMBOL(<product>).
-*      APPEND VALUE #( Produuid     = lv_uuid
-*                      Prodid = lv_prodid
-*                      %data = CORRESPONDING #( <product> EXCEPT produuid prodid ) )
-*                        TO products ASSIGNING FIELD-SYMBOL(<new_product>).
-**      APPEND VALUE #( %cid_ref = <product>-travel_id )
-**                        TO market_cba ASSIGNING FIELD-SYMBOL(<markets_cba>).
-*
-*      <new_product>-Phaseid = '1'.
+    LOOP AT product_read_result ASSIGNING FIELD-SYMBOL(<product>).
+      APPEND VALUE #(
+                      %data = CORRESPONDING #( <product> EXCEPT Produuid Prodid )
+                      Produuid     = lv_uuid
+                      Prodid = lv_prodid
+                      Phaseid = '1' )
+                        TO products ASSIGNING FIELD-SYMBOL(<new_product>).
+*      APPEND VALUE #( %cid_ref = <product>-travel_id )
+*                        TO market_cba ASSIGNING FIELD-SYMBOL(<markets_cba>).
+
 *
 ** Implement LOOP statement after creating new entities - market, ordder
 ***********************************************************************
@@ -182,38 +183,38 @@ CLASS lhc_Product IMPLEMENTATION.
 **        ENDLOOP.
 **      ENDLOOP.
 ***********************************************************************
-*    ENDLOOP.
+    ENDLOOP.
 *
-*    MODIFY ENTITIES OF zpa_i_product IN LOCAL MODE
-*      ENTITY Product
-*        CREATE FIELDS ( ProdUuid
-*                        Prodid
-*                        Pgid
-*                        Phaseid
-*                        Height
-*                        Width
-*                        Depth
-*                        Price
-*                        PriceCurrency
-*                        Taxrate
-*                        SizeUom )
-*          WITH products
-**        CREATE BY \_Booking FIELDS ( booking_id booking_date customer_id carrier_id connection_id flight_date flight_price currency_code booking_status )
-**          WITH bookings_cba
-**      ENTITY booking
-**        CREATE BY \_BookSupplement FIELDS ( booking_supplement_id supplement_id price currency_code )
-**          WITH booksuppl_cba
-*      MAPPED mapped
-*      FAILED DATA(failed_create)
-*      REPORTED DATA(reported_create).
+    MODIFY ENTITIES OF zpa_i_product IN LOCAL MODE
+      ENTITY Product
+        CREATE FIELDS ( ProdUuid
+                        Prodid
+                        Pgid
+                        Phaseid
+                        Height
+                        Width
+                        Depth
+                        Price
+                        PriceCurrency
+                        Taxrate
+                        SizeUom )
+          WITH products
+*        CREATE BY \_Booking FIELDS ( booking_id booking_date customer_id carrier_id connection_id flight_date flight_price currency_code booking_status )
+*          WITH bookings_cba
+*      ENTITY booking
+*        CREATE BY \_BookSupplement FIELDS ( booking_supplement_id supplement_id price currency_code )
+*          WITH booksuppl_cba
+      MAPPED mapped
+      FAILED DATA(failed_create)
+      REPORTED DATA(reported_create).
 *
 *
-*      result = VALUE #( FOR product IN products INDEX INTO idx
-*                        (
-*                          %tky   = keys[ idx ]-%tky
-*                          %param = CORRESPONDING #( product )
-*                        )
-*                    ) .
+      result = VALUE #( FOR product IN products INDEX INTO idx
+                        (
+                          %tky   = keys[ idx ]-%tky
+                          %param = CORRESPONDING #( product )
+                        )
+                    ) .
 *
 *
 *

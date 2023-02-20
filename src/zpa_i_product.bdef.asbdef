@@ -20,7 +20,7 @@ etag master LocalChangedTime
   field ( readonly ) Phaseid;
 
 
-  action copyProduct result [1] $self;
+  action ( features : instance ) copyProduct parameter zpa_abs_product_id result [1] $self;
   //  parameter zpla_product_id
 
 

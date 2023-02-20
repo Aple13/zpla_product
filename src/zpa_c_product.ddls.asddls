@@ -9,6 +9,7 @@ define root view entity zpa_c_product
   key ProdUuid,
       //      @Consumption.valueHelpDefinition: [{ entity : {name: 'zpa_i_product' , element: 'Prodid' } }]
       @Search.defaultSearchElement: true
+      
       Prodid,
       @Consumption.valueHelpDefinition: [{ entity : {name: 'zpa_i_pg' , element: 'Pgid' } }]
       @EndUserText.label: 'Product Group'
