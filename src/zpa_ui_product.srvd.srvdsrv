@@ -1,6 +1,7 @@
 @EndUserText.label: 'Service definition for Product'
 define service Zpa_ui_product {
   expose zpa_c_product as Product;
+  expose zpa_c_prod_mrkt as ProductMarket;
   expose zpa_i_pg as ProductGroup;
   expose zpa_i_phase as Phase;
   expose zpa_i_market as Market;

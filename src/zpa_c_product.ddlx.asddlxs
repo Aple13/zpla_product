@@ -68,7 +68,7 @@ annotate view zpa_c_product with
           purpose: #STANDARD,
           type: #COLLECTION,
           label: 'Admin Data',
-          position: 20 },
+          position: 40 },
 
         { id: 'AdminInfo',
           purpose: #STANDARD,
@@ -84,14 +84,22 @@ annotate view zpa_c_product with
           parentId: 'AdminData',
           label: 'Change Info',
           position: 20,
-          targetQualifier: 'ChangeInfo' }
+          targetQualifier: 'ChangeInfo' },
+          
+
+        { id: 'Markets',
+          purpose: #STANDARD,
+          type: #LINEITEM_REFERENCE,
+          label: 'Markets',
+          position: 20,
+          targetElement: '_Prodmrkt'}
 
      ]
 
-@UI: { lineItem:       [{ position: 10, type: #FOR_ACTION, dataAction: 'copyProduct', label: 'Copy' }],
-         identification: [{ position: 10, type: #FOR_ACTION, dataAction: 'copyProduct', label: 'Copy' }]
-       }
-  
+  @UI: { lineItem:       [{ position: 10, type: #FOR_ACTION, dataAction: 'copyProduct', label: 'Copy' }],
+           identification: [{ position: 10, type: #FOR_ACTION, dataAction: 'copyProduct', label: 'Copy' }]
+         }
+
 
   @UI.hidden: true
   ProdUuid;
@@ -101,7 +109,7 @@ annotate view zpa_c_product with
   @UI.dataPoint: { qualifier: 'Prodid', title: 'Product ID:'}
   @UI.fieldGroup: [{ qualifier: 'BasicData', position: 10 }]
   Prodid;
-  
+
   @UI: { lineItem:       [{ position: 20 }],
   //     identification: [{ position: 20 }],
      selectionField: [{ position: 30 }] }
@@ -125,7 +133,7 @@ annotate view zpa_c_product with
 
   @UI.fieldGroup: [{ qualifier: 'Uom', position: 30 }]
   Width;
-       
+
   @UI: { lineItem:       [{ position: 40 }] }
   Measure;
 

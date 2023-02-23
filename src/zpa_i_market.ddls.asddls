@@ -10,7 +10,7 @@
 define view entity zpa_i_market
   as select from zpa_d_market
 {
-  key mrktid   as Marketid,
+  key mrktid   as Mrktid,
       mrktname as Marketname,
       code     as Code,
       imageurl as Imageurl

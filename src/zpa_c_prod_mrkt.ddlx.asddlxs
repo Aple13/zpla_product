@@ -1,0 +1,129 @@
+@Metadata.layer: #CORE
+@UI: {
+    headerInfo: { typeName: 'Market',
+                  typeNamePlural: 'Markets',
+                  imageUrl: 'Imageurl',
+                  title: { type: #STANDARD }
+                },
+    presentationVariant: [{ sortOrder: [{ by: 'Mrktid', direction: #ASC },
+                                        { by: 'Status', direction: #ASC }] }]
+     }
+
+annotate view zpa_c_prod_mrkt with
+{
+
+  @UI.facet: [
+
+  //        { id: 'Markets',
+  //          purpose: #STANDARD,
+  //          type: #IDENTIFICATION_REFERENCE,
+  //          label: 'Markets',
+  //          position: 10}
+  //         ,
+  //
+  //
+  //        { id: 'EndDate',
+  //          purpose: #HEADER,
+  //          type: #DATAPOINT_REFERENCE,
+  //          position: 20,
+  //          targetQualifier: 'EndDate:' },
+  //
+  //        { id: 'StartDate',
+  //          purpose: #HEADER,
+  //          type: #DATAPOINT_REFERENCE,
+  //          position: 40,
+  //          targetQualifier: 'StartDate:' },
+  //
+  //        { id: 'Market',
+  //          purpose: #HEADER,
+  //          type: #DATAPOINT_REFERENCE,
+  //          position: 30,
+  //          targetQualifier: 'Market:' }
+  //          ,
+  //
+  //
+        { id: 'GeneralInfo',
+          purpose: #STANDARD,
+          type: #COLLECTION,
+          label: 'General Information',
+          position: 10 },
+  //
+        { id: 'BasicData',
+          purpose: #STANDARD,
+          type: #FIELDGROUP_REFERENCE,
+          parentId: 'GeneralInfo',
+          label: 'Basic Data',
+          position: 10,
+          targetQualifier: 'BasicData' },
+
+        { id: 'Dates',
+          purpose: #STANDARD,
+          type: #FIELDGROUP_REFERENCE,
+          parentId: 'GeneralInfo',
+          label: ' ',
+          position: 10,
+          targetQualifier: 'Dates' },
+  //
+        { id: 'AdminData',
+          purpose: #STANDARD,
+          type: #COLLECTION,
+          label: 'Admin Data',
+          position: 20 },
+
+          { id: 'CreateInfo',
+          purpose: #STANDARD,
+          type: #FIELDGROUP_REFERENCE,
+          parentId: 'AdminData',
+          label: 'Create Info',
+          position: 10,
+          targetQualifier: 'CreateInfo' },
+
+        { id: 'ChangeInfo',
+          purpose: #STANDARD,
+          type: #FIELDGROUP_REFERENCE,
+          parentId: 'AdminData',
+          label: 'Change Info',
+          position: 20,
+          targetQualifier: 'ChangeInfo' }
+
+          ]
+
+  @UI.hidden: true
+  ProdUuid;
+  @UI.hidden: true
+  MrktUuid;
+
+  @UI: { lineItem:       [{ position: 10 }],
+         identification: [{ position: 10 }] }
+  @UI.dataPoint: { qualifier: 'Market', title: 'Country'}
+  @UI.fieldGroup: [{ qualifier: 'BasicData', position: 10 }]
+  Mrktid;
+
+  @UI: { lineItem:       [{ position: 20, criticality: 'StatusCriticality' }],
+         identification: [{ position: 20, criticality: 'StatusCriticality' }] }
+  @UI.fieldGroup: [{ qualifier: 'BasicData', position: 20, criticality: 'StatusCriticality' }]
+  Status;
+
+  @UI: { lineItem:       [{ position: 30 }],
+         identification: [{ position: 30 }] }
+  @UI.dataPoint: { qualifier: 'StartDate', title: 'Start Date'}
+  @UI.fieldGroup: [{ qualifier: 'Dates', position: 30 }]
+  Startdate;
+
+  @UI: { lineItem:       [{ position: 40 }],
+         identification: [{ position: 40 }] }
+  @UI.dataPoint: { qualifier: 'EndDate', title: 'End Date'}
+  @UI.fieldGroup: [{ qualifier: 'Dates', position: 40 }]
+  Enddate;
+
+  @UI.fieldGroup: [{ qualifier: 'CreateInfo', position: 10 }]
+  CreatedBy;
+  @UI.fieldGroup: [{ qualifier: 'CreateInfo', position: 20 }]
+  CreationTime;
+  @UI.fieldGroup: [{ qualifier: 'ChangeInfo', position: 10 }]
+  ChangedBy;
+  @UI.fieldGroup: [{ qualifier: 'ChangeInfo', position: 20 }]
+  ChangeTime;
+  @UI.hidden: true
+  LocalChangedTime;
+}

@@ -9,5 +9,17 @@ use etag
   use update;
   use delete;
 
+  use association _ProdMrkt { create; with draft; }
+
   use action copyProduct;
+}
+
+define behavior for zpa_c_prod_mrkt alias ProdMrkt
+{
+  use update;
+  use delete;
+
+  use association _Product { with draft; }
+
+  field ( readonly ) Status;
 }

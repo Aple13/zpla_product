@@ -54,5 +54,6 @@ define root view entity zpa_c_product
       _Pg,
       _Phase,
       _Currency,
-      _Uom
+      _Uom,
+      _Prodmrkt : redirected to composition child zpa_c_prod_mrkt
 }

@@ -13,6 +13,7 @@ etag master LocalChangedTime
   create;
   update;
   delete;
+  association _ProdMrkt { create; with draft; }
 
   field ( numbering : managed, readonly ) ProdUuid;
   field ( readonly ) CreatedBy, CreationTime, ChangedBy, ChangeTime, LocalChangedTime;
@@ -21,9 +22,6 @@ etag master LocalChangedTime
 
 
   action ( features : instance ) copyProduct parameter zpa_abs_product_id result [1] $self;
-  //  parameter zpla_product_id
-
-
 
   determination setPhaseid on save { create; }
 
@@ -35,25 +33,57 @@ etag master LocalChangedTime
     validation validateProductGroup;
     validation validateProductId;
   }
-
   mapping for zpa_d_product
-  {
-    ProdUuid = prod_uuid;
-    Prodid = prodid;
-    Pgid = pgid;
-    Phaseid = phaseid;
-    Height = height;
-    Depth = depth;
-    Width = width;
-    SizeUom = size_uom;
-    Price = price;
-    PriceCurrency = price_currency;
-    Taxrate = taxrate;
-    CreatedBy = created_by;
-    CreationTime = creation_time;
-    ChangedBy = changed_by;
-    ChangeTime = change_time;
-    LocalChangedTime = local_changed_time;
-  }
+    {
+      ProdUuid         = prod_uuid;
+      Prodid           = prodid;
+      Pgid             = pgid;
+      Phaseid          = phaseid;
+      Height           = height;
+      Depth            = depth;
+      Width            = width;
+      SizeUom          = size_uom;
+      Price            = price;
+      PriceCurrency    = price_currency;
+      Taxrate          = taxrate;
+      CreatedBy        = created_by;
+      CreationTime     = creation_time;
+      ChangedBy        = changed_by;
+      ChangeTime       = change_time;
+      LocalChangedTime = local_changed_time;
+    }
+ }
 
-}
+  define behavior for zpa_i_prod_mrkt alias ProdMrkt
+  implementation in class zbp_pa_i_prodmrkt unique
+  persistent table zpa_d_prod_mrkt
+  draft table zpa_d_prodmrkt_d
+  lock dependent by _Product
+  authorization dependent by _Product
+  etag master LocalChangedTime
+  {
+    association _Product { with draft; }
+    update;
+    delete;
+
+    field ( readonly ) ProdUuid;
+    field ( numbering : managed, readonly ) MrktUuid;
+    field ( readonly ) CreatedBy, CreationTime, ChangedBy, ChangeTime, LocalChangedTime;
+    field ( mandatory ) Mrktid, Startdate;
+
+
+    mapping for zpa_d_prod_mrkt
+      {
+        ProdUuid         = prod_uuid;
+        MrktUuid         = mrkt_uuid;
+        Mrktid           = mrktid;
+        Status           = status;
+        Startdate        = startdate;
+        Enddate          = enddate;
+        CreatedBy        = created_by;
+        CreationTime     = creation_time;
+        ChangedBy        = changed_by;
+        ChangeTime       = change_time;
+        LocalChangedTime = local_changed_time;
+      }
+  }

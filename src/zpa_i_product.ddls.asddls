@@ -9,6 +9,8 @@
 }
 define root view entity zpa_i_product
   as select from zpa_d_product
+  
+  composition [1..*] of zpa_i_prod_mrkt as _Prodmrkt
 
   association [1] to zpa_i_pg       as _Pg       on $projection.Pgid = _Pg.Pgid
   association [1] to zpa_i_phase    as _Phase    on $projection.Phaseid = _Phase.Phaseid
@@ -68,5 +70,6 @@ define root view entity zpa_i_product
       _Pg,
       _Phase,
       _Currency,
-      _Uom
+      _Uom,
+      _Prodmrkt
 }
