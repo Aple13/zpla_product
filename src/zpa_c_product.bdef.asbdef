@@ -12,6 +12,8 @@ use etag
   use association _ProdMrkt { create; with draft; }
 
   use action copyProduct;
+  use action moveToNextPhase;
+
 }
 
 define behavior for zpa_c_prod_mrkt alias ProdMrkt
@@ -20,6 +22,8 @@ define behavior for zpa_c_prod_mrkt alias ProdMrkt
   use delete;
 
   use association _Product { with draft; }
+
+  use action confirm;
 
   field ( readonly ) Status;
 }

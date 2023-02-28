@@ -87,6 +87,9 @@ annotate view zpa_c_prod_mrkt with
           targetQualifier: 'ChangeInfo' }
 
           ]
+          
+  @UI: { lineItem:       [{ position: 5, type: #FOR_ACTION, dataAction: 'confirm', label: 'Confirm' }] ,
+         identification: [{ position: 5, type: #FOR_ACTION, dataAction: 'confirm', label: 'Confirm' }] }        
 
   @UI.hidden: true
   ProdUuid;
@@ -99,7 +102,7 @@ annotate view zpa_c_prod_mrkt with
   @UI.fieldGroup: [{ qualifier: 'BasicData', position: 10 }]
   Mrktid;
 
-  @UI: { lineItem:       [{ position: 20, criticality: 'StatusCriticality' }],
+  @UI: { lineItem:       [{ position: 20, criticality: 'StatusCriticality' }] ,
          identification: [{ position: 20, criticality: 'StatusCriticality' }] }
   @UI.fieldGroup: [{ qualifier: 'BasicData', position: 20, criticality: 'StatusCriticality' }]
   Status;

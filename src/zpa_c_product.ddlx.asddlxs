@@ -85,7 +85,7 @@ annotate view zpa_c_product with
           label: 'Change Info',
           position: 20,
           targetQualifier: 'ChangeInfo' },
-          
+
 
         { id: 'Markets',
           purpose: #STANDARD,
@@ -96,9 +96,15 @@ annotate view zpa_c_product with
 
      ]
 
-  @UI: { lineItem:       [{ position: 10, type: #FOR_ACTION, dataAction: 'copyProduct', label: 'Copy' }],
-           identification: [{ position: 10, type: #FOR_ACTION, dataAction: 'copyProduct', label: 'Copy' }]
+  @UI: { lineItem:       [{ position: 10, type: #FOR_ACTION, dataAction: 'copyProduct', label: 'Copy' },
+                          { position: 20, type: #FOR_ACTION, dataAction: 'moveToNextPhase', label: 'Next Phase' }],
+         identification: [{ position: 10, type: #FOR_ACTION, dataAction: 'copyProduct', label: 'Copy' },
+                          { position: 20, type: #FOR_ACTION, dataAction: 'moveToNextPhase', label: 'Next Phase' }]
          }
+
+  //  @UI: { lineItem:       [{ position: 20, type: #FOR_ACTION, dataAction: 'moveToNextPhase', label: 'Next Phase' }],
+  //         identification: [{ position: 20, type: #FOR_ACTION, dataAction: 'moveToNextPhase', label: 'Next Phase' }]
+  //         }
 
 
   @UI.hidden: true
@@ -147,8 +153,11 @@ annotate view zpa_c_product with
   @UI: { lineItem:       [{ position: 60 }],
      identification: [{ position: 60 }] }
   @UI.dataPoint: { qualifier: 'TaxRate', title: 'Tax Rate:'}
-  @UI.fieldGroup: [{ qualifier: 'PriceDetails', position: 20 }]
+  @UI.fieldGroup: [{ qualifier: 'PriceDetails', position: 20, hidden: #( VirtualElement ) }]
   Taxrate;
+
+  @UI.fieldGroup: [{ qualifier: 'PriceDetails', position: 30 }]
+  VirtualElement;
 
   @UI.hidden: true
   Imageurl;

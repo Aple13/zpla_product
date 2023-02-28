@@ -1,6 +1,11 @@
 CLASS lhc_Product DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
 
+    CONSTANTS:
+      BEGIN OF out_phase,
+        out TYPE c LENGTH 1  VALUE '4',
+      END OF out_phase.
+
     METHODS get_instance_features FOR INSTANCE FEATURES
       IMPORTING keys REQUEST requested_features FOR Product RESULT result.
 
@@ -14,12 +19,30 @@ CLASS lhc_Product DEFINITION INHERITING FROM cl_abap_behavior_handler.
       IMPORTING keys FOR product~validateproductid.
     METHODS copyproduct FOR MODIFY
       IMPORTING keys FOR ACTION product~copyproduct RESULT result.
+    METHODS movetonextphase FOR MODIFY
+      IMPORTING keys FOR ACTION product~movetonextphase RESULT result.
 
 ENDCLASS.
 
 CLASS lhc_Product IMPLEMENTATION.
 
   METHOD get_instance_features.
+    READ ENTITIES OF zpa_i_product IN LOCAL MODE
+        ENTITY Product
+            FIELDS ( PhaseId ) WITH CORRESPONDING #( keys )
+    RESULT DATA(products)
+    FAILED failed.
+
+    result =
+      VALUE #(
+        FOR product IN products
+          LET is_out   =   COND #( WHEN product-Phaseid = out_phase-out
+                                         THEN if_abap_behv=>fc-o-disabled
+                                         ELSE if_abap_behv=>fc-o-enabled )
+          IN
+            ( %tky             = product-%tky
+              %action-moveToNextPhase  = is_out
+             ) ).
   ENDMETHOD.
 
   METHOD get_instance_authorizations.
@@ -209,12 +232,12 @@ CLASS lhc_Product IMPLEMENTATION.
       REPORTED DATA(reported_create).
 *
 *
-      result = VALUE #( FOR product IN products INDEX INTO idx
-                        (
-                          %tky   = keys[ idx ]-%tky
-                          %param = CORRESPONDING #( product )
-                        )
-                    ) .
+    result = VALUE #( FOR product IN products INDEX INTO idx
+                      (
+                        %tky   = keys[ idx ]-%tky
+                        %param = CORRESPONDING #( product )
+                      )
+                  ) .
 *
 *
 *
@@ -232,5 +255,128 @@ CLASS lhc_Product IMPLEMENTATION.
 
   ENDMETHOD.
 
+
+  METHOD moveToNextPhase.
+
+    DATA: tt_phase TYPE TABLE FOR UPDATE zpa_i_product\\Product.
+
+    READ ENTITIES OF zpa_i_product IN LOCAL MODE
+        ENTITY Product
+         FIELDS ( PhaseId ) WITH CORRESPONDING #( keys )
+                    RESULT DATA(product_read_result)
+       FAILED    failed
+       REPORTED  reported.
+
+    LOOP AT product_read_result ASSIGNING FIELD-SYMBOL(<ls_phase>).
+
+      CASE <ls_phase>-PhaseId.
+
+        WHEN 1.
+          READ ENTITIES OF zpa_i_product IN LOCAL MODE
+            ENTITY Product BY \_ProdMrkt
+                FIELDS ( Mrktid ProdUuid ) WITH CORRESPONDING #( keys )
+            RESULT DATA(mrktids).
+
+          IF mrktids IS NOT INITIAL.
+            <ls_phase>-PhaseId = <ls_phase>-PhaseId + 1.
+          ELSE.
+            APPEND VALUE #(  %tky = <ls_phase>-%tky ) TO failed-product.
+
+            APPEND VALUE #(  %tky        = <ls_phase>-%tky
+                             %state_area = 'ACTION_PHASE_1'
+                             %msg        = NEW zcm_pa_product(
+                                               severity   = if_abap_behv_message=>severity-error
+                                               textid     = zcm_pa_product=>phase_1
+                                               phaseid = <ls_phase>-Phaseid )
+                             %element-PhaseId = if_abap_behv=>mk-on
+                              )
+              TO reported-product.
+          ENDIF.
+
+        WHEN 2.
+          READ ENTITIES OF zpa_i_product IN LOCAL MODE
+            ENTITY Product BY \_ProdMrkt
+                FIELDS ( Status ) WITH CORRESPONDING #( keys )
+            RESULT DATA(status).
+
+          LOOP AT status ASSIGNING FIELD-SYMBOL(<ls_status>).
+            IF <ls_status>-Status = 'X'.
+              DATA(lv_status) = 'X'.
+              EXIT.
+            ENDIF.
+          ENDLOOP.
+
+          IF lv_status = 'X'.
+            <ls_phase>-PhaseId = <ls_phase>-PhaseId + 1.
+          ELSE.
+            APPEND VALUE #(  %tky = <ls_phase>-%tky ) TO failed-product.
+
+            APPEND VALUE #(  %tky        = <ls_phase>-%tky
+                             %state_area = 'ACTION_PHASE_2'
+                             %msg        = NEW zcm_pa_product(
+                                               severity   = if_abap_behv_message=>severity-error
+                                               textid     = zcm_pa_product=>phase_2
+                                               phaseid = <ls_phase>-Phaseid )
+                             %element-PhaseId = if_abap_behv=>mk-on
+                              )
+              TO reported-product.
+          ENDIF.
+
+        WHEN 3.
+          READ ENTITIES OF zpa_i_product IN LOCAL MODE
+              ENTITY Product BY \_ProdMrkt
+                  FIELDS ( Enddate ) WITH CORRESPONDING #( keys )
+              RESULT DATA(dates).
+
+          DATA(lv_today) = cl_abap_context_info=>get_system_date( ).
+
+          LOOP AT dates ASSIGNING FIELD-SYMBOL(<ls_date>).
+            IF <ls_date>-Enddate > lv_today.
+              DATA(lv_date) = 'X'.
+              EXIT.
+            ENDIF.
+          ENDLOOP.
+
+          IF lv_date <> 'X'.
+            <ls_phase>-PhaseId = <ls_phase>-PhaseId + 1.
+          ELSE.
+            APPEND VALUE #(  %tky = <ls_phase>-%tky ) TO failed-product.
+
+            APPEND VALUE #(  %tky        = <ls_phase>-%tky
+                             %state_area = 'ACTION_PHASE_3'
+                             %msg        = NEW zcm_pa_product(
+                                               severity   = if_abap_behv_message=>severity-error
+                                               textid     = zcm_pa_product=>phase_3
+                                               phaseid = <ls_phase>-Phaseid )
+                             %element-PhaseId = if_abap_behv=>mk-on
+                              )
+              TO reported-product.
+          ENDIF.
+
+      ENDCASE.
+
+      APPEND VALUE #(
+                %tky             = <ls_phase>-%tky
+                PhaseID          = <ls_phase>-PhaseId
+                %control-PhaseID = if_abap_behv=>mk-on
+                       ) TO tt_phase.
+    ENDLOOP.
+
+    MODIFY ENTITIES OF zpa_i_product IN LOCAL MODE
+    ENTITY Product
+       UPDATE
+         FIELDS ( PhaseId ) WITH tt_phase.
+
+
+    READ ENTITIES OF zpa_i_product IN LOCAL MODE
+        ENTITY Product
+    ALL FIELDS WITH CORRESPONDING #( keys )
+        RESULT DATA(products).
+
+    result = VALUE #( FOR product IN products
+                        ( %tky   = product-%tky
+                          %param = product ) ).
+
+  ENDMETHOD.
 
 ENDCLASS.

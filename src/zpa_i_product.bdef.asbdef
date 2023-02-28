@@ -20,8 +20,11 @@ etag master LocalChangedTime
   field ( mandatory ) Prodid, Pgid, Price, PriceCurrency, SizeUom;
   field ( readonly ) Phaseid;
 
+//  field ( mandatory : create, readonly : update ) Prodid;
+
 
   action ( features : instance ) copyProduct parameter zpa_abs_product_id result [1] $self;
+  action ( features : instance ) moveToNextPhase result [1] $self;
 
   determination setPhaseid on save { create; }
 
@@ -32,6 +35,10 @@ etag master LocalChangedTime
   {
     validation validateProductGroup;
     validation validateProductId;
+    validation ProdMrkt~validateMarket;
+    validation ProdMrkt~validateStartDate;
+    validation ProdMrkt~validateEndDate;
+    validation ProdMrkt~validateDuplicates;
   }
   mapping for zpa_d_product
     {
@@ -70,6 +77,14 @@ etag master LocalChangedTime
     field ( numbering : managed, readonly ) MrktUuid;
     field ( readonly ) CreatedBy, CreationTime, ChangedBy, ChangeTime, LocalChangedTime;
     field ( mandatory ) Mrktid, Startdate;
+    field ( features : instance ) Startdate;
+
+    validation validateMarket on save { field Mrktid; create; }
+    validation validateStartDate on save { field Startdate; create; }
+    validation validateEndDate on save { field Enddate; create; }
+    validation validateDuplicates on save { field Mrktid; create; }
+
+    action ( features : instance ) confirm result [1] $self;
 
 
     mapping for zpa_d_prod_mrkt

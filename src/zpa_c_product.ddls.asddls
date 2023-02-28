@@ -25,7 +25,6 @@ define root view entity zpa_c_product
       @UI.textArrangement: #TEXT_ONLY
       Phaseid,
       _Phase.Phase as Phase,
-
       PhaseCriticality,
       Height,
       Depth,
@@ -45,6 +44,9 @@ define root view entity zpa_c_product
       @Semantics.imageUrl: true
       @UI.identification: [{iconUrl: 'Imageurl'}]
       _Pg.Imageurl as Imageurl,
+      @EndUserText.label: 'Virtual'
+      @ObjectModel.virtualElementCalculatedBy: 'ABAP:ZPA_CL_VIRTUAL'
+      virtual VirtualElement : abap_boolean,
       CreatedBy,
       CreationTime,
       ChangedBy,
