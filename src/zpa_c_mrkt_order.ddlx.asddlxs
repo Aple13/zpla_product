@@ -1,0 +1,99 @@
+@Metadata.layer: #CORE
+@UI: {
+    headerInfo: { typeName: 'Order',
+                  typeNamePlural: 'Orders',
+                 imageUrl: 'imageUrl',
+                  title: { type: #STANDARD }
+                },
+                    presentationVariant: [{ sortOrder: [{ by: 'DeliveryDate', direction: #ASC }] }]
+     }
+
+annotate view zpa_c_mrkt_order with
+{
+  @UI.facet: [
+
+         { id: 'GeneralInfo',
+           purpose: #STANDARD,
+           type: #COLLECTION,
+           label: 'General Information',
+           position: 10 },
+   //
+         { id: 'BasicData',
+           purpose: #STANDARD,
+           type: #FIELDGROUP_REFERENCE,
+           parentId: 'GeneralInfo',
+           label: 'Basic Data',
+           position: 10,
+           targetQualifier: 'BasicData' },
+
+   //
+         { id: 'AdminData',
+           purpose: #STANDARD,
+           type: #COLLECTION,
+           label: 'Admin Data',
+           position: 20 },
+
+           { id: 'CreateInfo',
+           purpose: #STANDARD,
+           type: #FIELDGROUP_REFERENCE,
+           parentId: 'AdminData',
+           label: 'Create Info',
+           position: 10,
+           targetQualifier: 'CreateInfo' },
+
+         { id: 'ChangeInfo',
+           purpose: #STANDARD,
+           type: #FIELDGROUP_REFERENCE,
+           parentId: 'AdminData',
+           label: 'Change Info',
+           position: 20,
+           targetQualifier: 'ChangeInfo' }
+
+           ]
+
+  @UI.hidden: true
+  ProdUuid;
+  @UI.hidden: true
+  MrktUuid;
+  @UI.hidden: true
+  OrderUuid;
+
+  @UI: { lineItem:       [{ position: 10 }],
+          identification: [{ position: 10 }] }
+  @UI.fieldGroup: [{ qualifier: 'BasicData', position: 10 }]
+  @UI.dataPoint: { qualifier: 'Orderid', title: 'Order ID:'}
+  Orderid;
+  @UI: { lineItem:       [{ position: 40 }],
+          identification: [{ position: 40 }] }
+  @UI.fieldGroup: [{ qualifier: 'BasicData', position: 40 }]
+  Quantity;
+  @UI: { lineItem:       [{ position: 20 }],
+          identification: [{ position: 20 }] }
+  @UI.fieldGroup: [{ qualifier: 'BasicData', position: 20 }]
+  CalendarYear;
+  @UI: { lineItem:       [{ position: 30 }],
+          identification: [{ position: 30 }] }
+  @UI.fieldGroup: [{ qualifier: 'BasicData', position: 30 }]
+  DeliveryDate;
+  @UI: { lineItem:       [{ position: 50 }],
+          identification: [{ position: 50 }] }
+  @UI.dataPoint: { qualifier: 'Net', title: 'Net Amount:'}
+  Netamount;
+  @UI: { lineItem:       [{ position: 60 }],
+          identification: [{ position: 60 }] }
+  @UI.dataPoint: { qualifier: 'Gross', title: 'Gross Amount:'}
+  Grossamount;
+
+  @UI.hidden: true
+  AmountCurrency;
+
+  @UI.fieldGroup: [{ qualifier: 'CreateInfo', position: 10 }]
+  CreatedBy;
+  @UI.fieldGroup: [{ qualifier: 'CreateInfo', position: 20 }]
+  CreationTime;
+  @UI.fieldGroup: [{ qualifier: 'ChangeInfo', position: 10 }]
+  ChangedBy;
+  @UI.fieldGroup: [{ qualifier: 'ChangeInfo', position: 20 }]
+  ChangeTime;
+
+}

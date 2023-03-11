@@ -99,7 +99,25 @@ CLASS zcm_pa_product DEFINITION
         attr2 TYPE scx_attrname VALUE '',
         attr3 TYPE scx_attrname VALUE '',
         attr4 TYPE scx_attrname VALUE '',
-      END OF phase_3.
+      END OF phase_3,
+
+      BEGIN OF delivery_date_error_start,
+        msgid TYPE symsgid VALUE 'ZPA_MSG_PRODUCT',
+        msgno TYPE symsgno VALUE '011',
+        attr1 TYPE scx_attrname VALUE '',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF delivery_date_error_start,
+
+      BEGIN OF delivery_date_error_end,
+        msgid TYPE symsgid VALUE 'ZPA_MSG_PRODUCT',
+        msgno TYPE symsgno VALUE '012',
+        attr1 TYPE scx_attrname VALUE '',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF delivery_date_error_end.
 
     METHODS constructor
       IMPORTING

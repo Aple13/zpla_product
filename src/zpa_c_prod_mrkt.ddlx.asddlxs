@@ -68,7 +68,7 @@ annotate view zpa_c_prod_mrkt with
           purpose: #STANDARD,
           type: #COLLECTION,
           label: 'Admin Data',
-          position: 20 },
+          position: 30 },
 
           { id: 'CreateInfo',
           purpose: #STANDARD,
@@ -84,7 +84,14 @@ annotate view zpa_c_prod_mrkt with
           parentId: 'AdminData',
           label: 'Change Info',
           position: 20,
-          targetQualifier: 'ChangeInfo' }
+          targetQualifier: 'ChangeInfo' },
+          
+          { id: 'Orders',
+          purpose: #STANDARD,
+          type: #LINEITEM_REFERENCE,
+          label: 'Orders',
+          position: 20,
+          targetElement: '_MrktOrder'}
 
           ]
           

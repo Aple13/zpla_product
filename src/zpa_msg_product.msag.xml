@@ -68,6 +68,18 @@
      <MSGNR>010</MSGNR>
      <TEXT>There are not all Markets completed (End date is longer than today)</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZPA_MSG_PRODUCT</ARBGB>
+     <MSGNR>011</MSGNR>
+     <TEXT>Delivery date must be greater than Market Start Date</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZPA_MSG_PRODUCT</ARBGB>
+     <MSGNR>012</MSGNR>
+     <TEXT>Delivery date must be less than or equal to Market End Date</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>

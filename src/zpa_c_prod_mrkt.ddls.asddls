@@ -28,5 +28,6 @@ define view entity zpa_c_prod_mrkt
       LocalChangedTime,
       /* Associations */
       _Market,
-      _Product : redirected to parent zpa_c_product
+      _Product : redirected to parent zpa_c_product,
+      _MrktOrder : redirected to composition child zpa_c_mrkt_order
 }

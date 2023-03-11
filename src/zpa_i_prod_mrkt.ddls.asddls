@@ -9,6 +9,8 @@
 }
 define view entity zpa_i_prod_mrkt
   as select from zpa_d_prod_mrkt
+  
+  composition [1..*] of zpa_i_mrkt_order as _MrktOrder
 
   association     to parent zpa_i_product as _Product on $projection.ProdUuid = _Product.ProdUuid
 
@@ -42,5 +44,6 @@ define view entity zpa_i_prod_mrkt
       local_changed_time as LocalChangedTime,
 
       _Market,
-      _Product
+      _Product,
+      _MrktOrder
 }

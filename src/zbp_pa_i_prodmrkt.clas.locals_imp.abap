@@ -49,6 +49,12 @@ CLASS lhc_prodmrkt IMPLEMENTATION.
     ENDIF.
 
     LOOP AT mrktids INTO DATA(market).
+
+    APPEND VALUE #(
+        %tky = market-%tky
+        %state_area        = 'VALIDATE_MARKET' )
+          TO reported-prodmrkt.
+
       IF market-Mrktid IS INITIAL OR NOT line_exists( markets_db[ mrktid = market-Mrktid ] ).
         APPEND VALUE #(  %tky = market-%tky ) TO failed-prodmrkt.
 
@@ -78,6 +84,11 @@ CLASS lhc_prodmrkt IMPLEMENTATION.
 
     LOOP AT markets INTO DATA(market).
 
+    APPEND VALUE #(
+        %tky = market-%tky
+        %state_area        = 'VALIDATE_START_DATE' )
+          TO reported-prodmrkt.
+
       IF market-Startdate < cl_abap_context_info=>get_system_date( ).  "begin_date must be in the future
 
         APPEND VALUE #( %tky        = market-%tky ) TO failed-ProdMrkt.
@@ -102,9 +113,14 @@ CLASS lhc_prodmrkt IMPLEMENTATION.
       ENTITY ProdMrkt
     FIELDS ( Startdate Enddate )
     WITH CORRESPONDING #( keys )
-  RESULT DATA(markets).
+    RESULT DATA(markets).
 
     LOOP AT markets INTO DATA(market).
+
+    APPEND VALUE #(
+        %tky = market-%tky
+        %state_area        = 'VALIDATE_END_DATE' )
+          TO reported-prodmrkt.
 
       IF market-Enddate < cl_abap_context_info=>get_system_date( ).
 
@@ -163,6 +179,12 @@ CLASS lhc_prodmrkt IMPLEMENTATION.
     ENDIF.
 
     LOOP AT mrktids INTO DATA(market).
+
+    APPEND VALUE #(
+        %tky = market-%tky
+        %state_area        = 'VALIDATE_MARKET' )
+          TO reported-prodmrkt.
+
       IF line_exists( markets_db[ mrktid = market-Mrktid
                                   prod_uuid = market-ProdUuid ] ).
         APPEND VALUE #(  %tky = market-%tky ) TO failed-prodmrkt.

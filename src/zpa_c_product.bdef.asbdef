@@ -17,13 +17,27 @@ use etag
 }
 
 define behavior for zpa_c_prod_mrkt alias ProdMrkt
+use etag
+{
+  use update;
+  use delete;
+
+  use association _Product { with draft; }
+  use association _MrktOrder { create; with draft; }
+
+  use action confirm;
+
+  field ( readonly ) Status;
+}
+
+define behavior for zpa_c_mrkt_order alias MrktOrder
+use etag
 {
   use update;
   use delete;
 
   use association _Product { with draft; }
 
-  use action confirm;
+  field ( readonly ) Orderid, AmountCurrency, Grossamount, Netamount, CalendarYear;
 
-  field ( readonly ) Status;
 }

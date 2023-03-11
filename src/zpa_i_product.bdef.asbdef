@@ -20,13 +20,11 @@ etag master LocalChangedTime
   field ( mandatory ) Prodid, Pgid, Price, PriceCurrency, SizeUom;
   field ( readonly ) Phaseid;
 
-//  field ( mandatory : create, readonly : update ) Prodid;
-
-
   action ( features : instance ) copyProduct parameter zpa_abs_product_id result [1] $self;
   action ( features : instance ) moveToNextPhase result [1] $self;
 
   determination setPhaseid on save { create; }
+//  determination calculateAmount on modify { create; field Price; field Taxrate; }
 
   validation validateProductGroup on save { field Pgid; create; }
   validation validateProductId on save { field Prodid; create; }
@@ -39,7 +37,9 @@ etag master LocalChangedTime
     validation ProdMrkt~validateStartDate;
     validation ProdMrkt~validateEndDate;
     validation ProdMrkt~validateDuplicates;
+    validation MrktOrder~validateDeliveryDate;
   }
+
   mapping for zpa_d_product
     {
       ProdUuid         = prod_uuid;
@@ -72,6 +72,7 @@ etag master LocalChangedTime
     association _Product { with draft; }
     update;
     delete;
+    association _MrktOrder { create; with draft; }
 
     field ( readonly ) ProdUuid;
     field ( numbering : managed, readonly ) MrktUuid;
@@ -86,7 +87,6 @@ etag master LocalChangedTime
 
     action ( features : instance ) confirm result [1] $self;
 
-
     mapping for zpa_d_prod_mrkt
       {
         ProdUuid         = prod_uuid;
@@ -100,5 +100,49 @@ etag master LocalChangedTime
         ChangedBy        = changed_by;
         ChangeTime       = change_time;
         LocalChangedTime = local_changed_time;
+      }
+  }
+
+  define behavior for zpa_i_mrkt_order alias MrktOrder
+  implementation in class zbp_pa_i_mrktorder unique
+  persistent table zpa_d_mrkt_order
+  draft table zpa_d_mrktord_d
+  lock dependent by _Product
+  authorization dependent by _Product
+  etag master ChangeTime
+  {
+    association _Product { with draft; }
+    update;
+    delete;
+
+    field ( readonly ) ProdUuid, MrktUuid;
+    field ( numbering : managed, readonly ) OrderUuid;
+    field ( readonly ) CreatedBy, CreationTime, ChangedBy, ChangeTime;
+    field ( mandatory ) Quantity, DeliveryDate;
+
+    validation validateDeliveryDate on save { field DeliveryDate; create; }
+
+    determination calculateOrderId on save { create; }
+    determination setCalendarYear on modify { create; field DeliveryDate; }
+    determination calculateAmount on modify { create; field Quantity; }
+
+    internal action recalculateAmount;
+
+    mapping for zpa_d_mrkt_order
+      {
+        ProdUuid       = prod_uuid;
+        MrktUuid       = mrkt_uuid;
+        OrderUuid      = order_uuid;
+        Orderid        = orderid;
+        Quantity       = quantity;
+        CalendarYear   = calendar_year;
+        DeliveryDate   = delivery_date;
+        Netamount      = netamount;
+        Grossamount    = grossamount;
+        AmountCurrency = amountcurr;
+        CreatedBy      = created_by;
+        CreationTime   = creation_time;
+        ChangedBy      = changed_by;
+        ChangeTime     = change_time;
       }
   }
