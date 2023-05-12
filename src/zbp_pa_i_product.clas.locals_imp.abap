@@ -21,6 +21,8 @@ CLASS lhc_Product DEFINITION INHERITING FROM cl_abap_behavior_handler.
       IMPORTING keys FOR ACTION product~copyproduct RESULT result.
     METHODS movetonextphase FOR MODIFY
       IMPORTING keys FOR ACTION product~movetonextphase RESULT result.
+    METHODS setpgnametranslation FOR DETERMINE ON SAVE
+      IMPORTING keys FOR product~setpgnametranslation.
 *    METHODS calculateamount FOR DETERMINE ON MODIFY
 *      IMPORTING keys FOR product~calculateamount.
 
@@ -344,5 +346,101 @@ CLASS lhc_Product IMPLEMENTATION.
 *
 *    reported = CORRESPONDING #( DEEP execute_reported ).
 *  ENDMETHOD.
+
+  METHOD setPgnameTranslation.
+    READ ENTITIES OF zpa_i_product IN LOCAL MODE
+          ENTITY Product
+            FIELDS ( Pgname TransCode ) WITH CORRESPONDING #( keys )
+          RESULT DATA(TransPGName).
+
+    DELETE TransPGName WHERE Pgid IS INITIAL AND TransCode IS INITIAL.
+    CHECK TransPGName IS NOT INITIAL.
+
+    DATA lv_translate TYPE zpla_pg_name.
+
+    LOOP AT TransPGName ASSIGNING FIELD-SYMBOL(<Transpgname>).
+      TRANSLATE <Transpgname>-TransCode+0(2) TO LOWER CASE.
+      CONCATENATE
+                'https://dictionary.yandex.net/api/v1/dicservice/lookup?key='
+                'dict.1.1.20230420T075824Z.40c97a04bf9203c9.4cfa58424f96683d29ada52aba4a2bea41d32a51'
+                '&lang=en-'
+                <Transpgname>-TransCode
+                '&text='
+                <Transpgname>-Pgname
+      INTO DATA(url_result).
+
+      REPLACE ALL OCCURRENCES OF ` ` IN url_result WITH '%20'.
+
+    ENDLOOP.
+
+    DATA(lo_destination) = cl_http_destination_provider=>create_by_url( i_url = url_result ).
+    DATA(lo_http_client) = cl_web_http_client_manager=>create_by_http_destination( i_destination = lo_destination ).
+
+    DATA(lo_request) = lo_http_client->get_http_request(  ).
+
+    DATA(lo_response) = lo_http_client->execute( i_method = if_web_http_client=>get ).
+
+    DATA(lo_text_xml) = lo_response->get_text(  ).
+
+    TYPES:
+      BEGIN OF ls_tr,
+        text TYPE string,
+        syn  TYPE string,
+        mean TYPE string,
+        ex   TYPE string,
+      END OF ls_tr,
+      lt_tr_table TYPE STANDARD TABLE OF ls_tr WITH EMPTY KEY,
+
+      BEGIN OF ls_def,
+        text TYPE string,
+        tr   TYPE lt_tr_table,
+      END OF ls_def,
+      lt_def_table TYPE STANDARD TABLE OF ls_def WITH EMPTY KEY,
+
+      BEGIN OF ls_result,
+        head TYPE string,
+        def  TYPE lt_def_table,
+      END OF ls_result.
+
+      DATA lt_result TYPE STANDARD TABLE OF ls_result WITH EMPTY KEY.
+
+
+    TRY.
+
+*CALL TRANSFORMATION zpa_tr_translate
+*SOURCE XML lo_text_xml
+*RESULT result = lv_translate.
+      CATCH cx_root.
+    ENDTRY.
+
+    lv_translate = lo_response->get_text(  ).
+
+**********************************************************************
+* url = https://dictionary.yandex.net/api/v1/dicservice/lookup?key=API-ключ&lang=en-ru&text=time
+* key = API - dict.1.1.20230418T095939Z.7643dd81b22f3dec.475203ce19a5812a09b1e139063da925169311f0
+* lang = en - TransCode
+* text = Pgname
+*
+* CONCATENATE
+*               'https://dictionary.yandex.net/api/v1/dicservice/lookup?key=API-'
+*               'dict.1.1.20230418T095939Z.7643dd81b22f3dec.475203ce19a5812a09b1e139063da925169311f0'
+*               '&lang=en-'
+*               TransCode
+*               '&text='
+*               Pgname
+*   INTO DATA(url-result).
+**********************************************************************
+
+    MODIFY ENTITIES OF zpa_i_product IN LOCAL MODE
+    ENTITY Product
+      UPDATE
+      FIELDS ( PgnameTrans )
+      WITH VALUE #( FOR translate IN TransPGName (
+          %tky        = translate-%tky
+          PgnameTrans = lv_translate ) )
+    REPORTED DATA(update_reported).
+
+    reported = CORRESPONDING #( DEEP update_reported ).
+  ENDMETHOD.
 
 ENDCLASS.

@@ -1,0 +1,5 @@
+@EndUserText.label: 'Service definition for Order OVP'
+define service Zpa_ui_mrkt_order_ovp {
+  expose zpa_c_ovp_glob_filt_mrkt_order as GlobalFilters;
+  expose ZPA_C_OVP_CARDS_MARKET_ORDER as OVPCards;
+}

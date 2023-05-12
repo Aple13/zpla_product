@@ -7,9 +7,13 @@
     sizeCategory: #S,
     dataClass: #MIXED
 }
+
+@ObjectModel.resultSet.sizeCategory: #XS
+
 define view entity zpa_i_market
   as select from zpa_d_market
 {
+//      @ObjectModel.text.element: ['Code']
   key mrktid   as Mrktid,
       mrktname as Marketname,
       code     as Code,

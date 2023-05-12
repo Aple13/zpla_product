@@ -121,6 +121,12 @@ annotate view zpa_c_product with
      selectionField: [{ position: 30 }] }
   @UI.fieldGroup: [{ qualifier: 'BasicData', position: 20 }]
   Pgid;
+  
+  @UI.fieldGroup: [{ qualifier: 'BasicData', position: 21 }]
+  PgnameTrans;
+  
+  @UI.fieldGroup: [{ qualifier: 'BasicData', position: 22 }]
+  TransCode;
 
   @UI: { lineItem:       [{ position: 30, criticality: 'PhaseCriticality' }],
   //     identification: [{ position: 30 }],
@@ -155,6 +161,7 @@ annotate view zpa_c_product with
   @UI.dataPoint: { qualifier: 'TaxRate', title: 'Tax Rate:'}
   @UI.fieldGroup: [{ qualifier: 'PriceDetails', position: 20, hidden: #( VirtualElement ) }]
   Taxrate;
+  
 
   @UI.fieldGroup: [{ qualifier: 'PriceDetails', position: 30 }]
   VirtualElement;

@@ -1,0 +1,5 @@
+@EndUserText.label: 'ZPLA_SC_SUPPLIERS'
+@OData.schema.name: 'API_BUSINESS_PARTNER'
+define service ZPLA_SC_SUPPLIERS {
+ expose ZZPLAA_SUPPLIER; 
+ } 

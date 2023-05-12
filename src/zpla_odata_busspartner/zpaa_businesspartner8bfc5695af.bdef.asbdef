@@ -1,0 +1,6 @@
+ implementation abstract;
+ define behavior for ZPAA_BUSINESSPARTNER8BFC5695AF
+  {
+  create;
+ update;
+ }

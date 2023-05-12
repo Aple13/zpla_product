@@ -1,0 +1,4 @@
+@EndUserText.label: 'Service definition for Order ALP'
+define service Zpa_ui_mrkt_order_alp {
+  expose zpa_c_alp_market_order as MrktOrder;
+}

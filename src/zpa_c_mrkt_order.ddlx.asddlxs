@@ -25,13 +25,28 @@ annotate view zpa_c_mrkt_order with
            label: 'Basic Data',
            position: 10,
            targetQualifier: 'BasicData' },
+           
+  //         
+           { id: 'BussPartner',
+           purpose: #STANDARD,
+           type: #COLLECTION,
+           label: 'Business Partner',
+           position: 20 },
+           
+           { id: 'BussPartnerInfo',
+           purpose: #STANDARD,
+           type: #FIELDGROUP_REFERENCE,
+           parentId: 'BussPartner',
+           label: 'Business Partner Info',
+           position: 10,
+           targetQualifier: 'BussInfo' },
 
    //
          { id: 'AdminData',
            purpose: #STANDARD,
            type: #COLLECTION,
            label: 'Admin Data',
-           position: 20 },
+           position: 30 },
 
            { id: 'CreateInfo',
            purpose: #STANDARD,
@@ -84,8 +99,13 @@ annotate view zpa_c_mrkt_order with
   @UI.dataPoint: { qualifier: 'Gross', title: 'Gross Amount:'}
   Grossamount;
 
-  @UI.hidden: true
-  AmountCurrency;
+  @UI: { lineItem:       [{ position: 35 }] }
+  @UI.fieldGroup: [{ qualifier: 'BussInfo', position: 10 }]
+  BussPartner;
+  @UI.fieldGroup: [{ qualifier: 'BussInfo', position: 20 }]
+  BussPartnerName;
+  @UI.fieldGroup: [{ qualifier: 'BussInfo', position: 30 }]
+  BussPartnerGroup;
 
   @UI.fieldGroup: [{ qualifier: 'CreateInfo', position: 10 }]
   CreatedBy;

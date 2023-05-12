@@ -18,13 +18,14 @@ etag master LocalChangedTime
   field ( numbering : managed, readonly ) ProdUuid;
   field ( readonly ) CreatedBy, CreationTime, ChangedBy, ChangeTime, LocalChangedTime;
   field ( mandatory ) Prodid, Pgid, Price, PriceCurrency, SizeUom;
-  field ( readonly ) Phaseid;
+  field ( readonly ) Phaseid, PgnameTrans;
 
   action ( features : instance ) copyProduct parameter zpa_abs_product_id result [1] $self;
   action ( features : instance ) moveToNextPhase result [1] $self;
 
   determination setPhaseid on save { create; }
-//  determination calculateAmount on modify { create; field Price; field Taxrate; }
+  determination setPgnameTranslation on save { create; field TransCode; }
+  //  determination calculateAmount on modify { create; field Price; field Taxrate; }
 
   validation validateProductGroup on save { field Pgid; create; }
   validation validateProductId on save { field Prodid; create; }
@@ -39,7 +40,6 @@ etag master LocalChangedTime
     validation ProdMrkt~validateDuplicates;
     validation MrktOrder~validateDeliveryDate;
   }
-
   mapping for zpa_d_product
     {
       ProdUuid         = prod_uuid;
@@ -53,96 +53,99 @@ etag master LocalChangedTime
       Price            = price;
       PriceCurrency    = price_currency;
       Taxrate          = taxrate;
+      PgnameTrans      = pgname_trans;
+      TransCode        = trans_code;
       CreatedBy        = created_by;
       CreationTime     = creation_time;
       ChangedBy        = changed_by;
       ChangeTime       = change_time;
       LocalChangedTime = local_changed_time;
     }
- }
 
-  define behavior for zpa_i_prod_mrkt alias ProdMrkt
-  implementation in class zbp_pa_i_prodmrkt unique
-  persistent table zpa_d_prod_mrkt
-  draft table zpa_d_prodmrkt_d
-  lock dependent by _Product
-  authorization dependent by _Product
-  etag master LocalChangedTime
-  {
-    association _Product { with draft; }
-    update;
-    delete;
-    association _MrktOrder { create; with draft; }
+}
 
-    field ( readonly ) ProdUuid;
-    field ( numbering : managed, readonly ) MrktUuid;
-    field ( readonly ) CreatedBy, CreationTime, ChangedBy, ChangeTime, LocalChangedTime;
-    field ( mandatory ) Mrktid, Startdate;
-    field ( features : instance ) Startdate;
+define behavior for zpa_i_prod_mrkt alias ProdMrkt
+implementation in class zbp_pa_i_prodmrkt unique
+persistent table zpa_d_prod_mrkt
+draft table zpa_d_prodmrkt_d
+lock dependent by _Product
+authorization dependent by _Product
+etag master LocalChangedTime
+{
+  association _Product { with draft; }
+  update;
+  delete;
+  association _MrktOrder { create; with draft; }
 
-    validation validateMarket on save { field Mrktid; create; }
-    validation validateStartDate on save { field Startdate; create; }
-    validation validateEndDate on save { field Enddate; create; }
-    validation validateDuplicates on save { field Mrktid; create; }
+  field ( readonly ) ProdUuid;
+  field ( numbering : managed, readonly ) MrktUuid;
+  field ( readonly ) CreatedBy, CreationTime, ChangedBy, ChangeTime, LocalChangedTime;
+  field ( mandatory ) Mrktid, Startdate;
+  field ( features : instance ) Startdate;
 
-    action ( features : instance ) confirm result [1] $self;
+  validation validateMarket on save { field Mrktid; create; }
+  validation validateStartDate on save { field Startdate; create; }
+  validation validateEndDate on save { field Enddate; create; }
+  validation validateDuplicates on save { field Mrktid; create; }
 
-    mapping for zpa_d_prod_mrkt
-      {
-        ProdUuid         = prod_uuid;
-        MrktUuid         = mrkt_uuid;
-        Mrktid           = mrktid;
-        Status           = status;
-        Startdate        = startdate;
-        Enddate          = enddate;
-        CreatedBy        = created_by;
-        CreationTime     = creation_time;
-        ChangedBy        = changed_by;
-        ChangeTime       = change_time;
-        LocalChangedTime = local_changed_time;
-      }
-  }
+  action ( features : instance ) confirm result [1] $self;
+  mapping for zpa_d_prod_mrkt
+    {
+      ProdUuid         = prod_uuid;
+      MrktUuid         = mrkt_uuid;
+      Mrktid           = mrktid;
+      Status           = status;
+      Startdate        = startdate;
+      Enddate          = enddate;
+      CreatedBy        = created_by;
+      CreationTime     = creation_time;
+      ChangedBy        = changed_by;
+      ChangeTime       = change_time;
+      LocalChangedTime = local_changed_time;
+    }
 
-  define behavior for zpa_i_mrkt_order alias MrktOrder
-  implementation in class zbp_pa_i_mrktorder unique
-  persistent table zpa_d_mrkt_order
-  draft table zpa_d_mrktord_d
-  lock dependent by _Product
-  authorization dependent by _Product
-  etag master ChangeTime
-  {
-    association _Product { with draft; }
-    update;
-    delete;
+}
 
-    field ( readonly ) ProdUuid, MrktUuid;
-    field ( numbering : managed, readonly ) OrderUuid;
-    field ( readonly ) CreatedBy, CreationTime, ChangedBy, ChangeTime;
-    field ( mandatory ) Quantity, DeliveryDate;
+define behavior for zpa_i_mrkt_order alias MrktOrder
+implementation in class zbp_pa_i_mrktorder unique
+persistent table zpa_d_mrkt_order
+draft table zpa_d_mrktord_d
+lock dependent by _Product
+authorization dependent by _Product
+etag master ChangeTime
+{
+  association _Product { with draft; }
+  update;
+  delete;
 
-    validation validateDeliveryDate on save { field DeliveryDate; create; }
+  field ( readonly ) ProdUuid, MrktUuid;
+  field ( numbering : managed, readonly ) OrderUuid;
+  field ( readonly ) CreatedBy, CreationTime, ChangedBy, ChangeTime;
+  field ( mandatory ) Quantity, DeliveryDate;
 
-    determination calculateOrderId on save { create; }
-    determination setCalendarYear on modify { create; field DeliveryDate; }
-    determination calculateAmount on modify { create; field Quantity; }
+  validation validateDeliveryDate on save { field DeliveryDate; create; }
 
-    internal action recalculateAmount;
+  determination calculateOrderId on save { create; }
+  determination setCalendarYear on modify { create; field DeliveryDate; }
+  determination calculateAmount on modify { create; field Quantity; }
 
-    mapping for zpa_d_mrkt_order
-      {
-        ProdUuid       = prod_uuid;
-        MrktUuid       = mrkt_uuid;
-        OrderUuid      = order_uuid;
-        Orderid        = orderid;
-        Quantity       = quantity;
-        CalendarYear   = calendar_year;
-        DeliveryDate   = delivery_date;
-        Netamount      = netamount;
-        Grossamount    = grossamount;
-        AmountCurrency = amountcurr;
-        CreatedBy      = created_by;
-        CreationTime   = creation_time;
-        ChangedBy      = changed_by;
-        ChangeTime     = change_time;
-      }
-  }
+  internal action recalculateAmount;
+  mapping for zpa_d_mrkt_order
+    {
+      ProdUuid       = prod_uuid;
+      MrktUuid       = mrkt_uuid;
+      OrderUuid      = order_uuid;
+      Orderid        = orderid;
+      Quantity       = quantity;
+      CalendarYear   = calendar_year;
+      DeliveryDate   = delivery_date;
+      Netamount      = netamount;
+      Grossamount    = grossamount;
+      AmountCurrency = amountcurr;
+      CreatedBy      = created_by;
+      CreationTime   = creation_time;
+      ChangedBy      = changed_by;
+      ChangeTime     = change_time;
+    }
+
+}

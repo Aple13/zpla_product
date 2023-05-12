@@ -1,0 +1,4 @@
+@EndUserText.label: 'Serv def for suppliers'
+define service Zpla_ui_suppliers {
+  expose zpla_suppliers_c as Suppliers;
+}
